@@ -45,26 +45,87 @@ describe Cave do
 
     it 'adds one element of water to the cave' do
       subject.add_water
-
       subject.to_depth_string.should == '1 ~ 0 0 0 0 0'
     end
 
     it 'adds two elements of water to the cave' do
       2.times { subject.add_water }
-
       subject.to_depth_string.should == '1 2 0 0 0 0 0'
     end
 
     it 'adds three elements of water to the cave' do
       3.times { subject.add_water }
-
       subject.to_depth_string.should == '1 2 1 0 0 0 0'
     end
 
     it 'adds 5 elements of water to the cave' do
       5.times { subject.add_water }
-
       subject.to_depth_string.should == '1 2 2 1 0 0 0'
+    end
+  end
+
+
+  describe '#add_water_to_column_and_row(column, row)' do
+
+    it 'adds one element of water to an empty column' do
+      subject.columns = Matrix[['#', '#'],
+                               ['~', ' '],
+                               ['#', ' '],
+                               ['#', ' '],
+                               ['#', ' '],
+                               ['#', '#']]
+      subject.add_water_to_column_and_row(0, 1)
+      subject.to_s.should == "##\n~~\n# \n# \n# \n##\n"
+    end
+
+    it 'adds one element of water to an blocked column' do
+      subject.columns = Matrix[['#', '#', '#', '#'],
+                               ['~', '~', ' ', ' '],
+                               ['#', '~', ' ', ' '],
+                               ['#', '~', ' ', ' '],
+                               ['#', '~', '~', '#'],
+                               ['#', '#', '#', '#']]
+      subject.add_water_to_column_and_row(2, 4)
+      subject.to_s.should == "####\n~~  \n#~  \n#~~ \n#~~#\n####\n"
+    end
+  end
+
+  describe '#add_water_to_column(column)' do
+
+    it 'adds one element of water to an empty column' do
+      subject.columns = Matrix[['#'],[' '],[' '],[' '],[' '],[' '],['#']]
+      subject.add_water_to_column(0)
+      subject.columns.to_a.join.should == '#    ~#'
+    end
+
+    it 'adds one element of water to a column' do
+      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
+      subject.add_water_to_column(0)
+      subject.columns.to_a.join.should == '#  ~~~#'
+    end
+
+    it 'adds one element of water to a flowing column' do
+      subject.columns = Matrix[['#'],[' '],[' '],['~'],[' '],[' '],['#']]
+      subject.add_water_to_column(0)
+      subject.columns.to_a.join.should == '#  ~~ #'
+    end
+
+    it 'adds no water to an already full column' do
+      subject.columns = Matrix[['#'],['~'],['~'],['~'],['~'],['~'],['#']]
+      subject.add_water_to_column(0)
+      subject.columns.to_a.join.should == '#~~~~~#'
+    end
+  end
+
+  describe '#flowing?(column)' do
+    it 'detects a flowing column' do
+      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],[' '],['#']]
+      subject.flowing?(0).should be_true
+    end
+
+    it 'detects a non-flowing column' do
+      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
+      subject.flowing?(0).should be_false
     end
   end
 
@@ -173,53 +234,5 @@ describe Cave do
       subject.to_s.should == "####\n~~ #\n#~~#\n####\n"
     end
 
-  end
-end
-
-describe Column do
-
-  context 'without water' do
-    subject { Column.new('#     #') }
-
-    its(:depth) { should == 0 }
-  end
-
-  context 'with water' do
-    subject { Column.new('#   ~~#') }
-
-    its(:depth) { should == 2 }
-  end
-
-  context 'with flowing water' do
-    subject { Column.new('#  ~  #') }
-
-    its(:depth) { should == '~' }
-  end
-
-  describe '#add_water' do
-
-    it 'adds one element of water to an empty column' do
-      subject.value = '#     #'
-      subject.add_water
-      subject.value.should == '#    ~#'
-    end
-
-    it 'adds one element of water to a column' do
-      subject.value = '#   ~~#'
-      subject.add_water
-      subject.value.should == '#  ~~~#'
-    end
-
-    it 'adds one element of water to a flowing column' do
-      subject.value = '#  ~  #'
-      subject.add_water
-      subject.value.should == '#  ~~ #'
-    end
-
-    it 'adds no water to an already full column' do
-      subject.value = '#~~~~~#'
-      subject.add_water
-      subject.value.should == '#~~~~~#'
-    end
   end
 end

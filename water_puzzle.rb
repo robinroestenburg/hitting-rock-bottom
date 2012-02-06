@@ -1,5 +1,9 @@
 require 'matrix'
 
+class Matrix
+  public :"[]=", :set_element, :set_component
+end
+
 class Cave
 
   attr_accessor :columns
@@ -11,20 +15,36 @@ class Cave
   end
 
   def add_water
-
-    # find last water element in Cave
     column, row = last_water_element
+    add_water_to_column_and_row(column, row)
+  end
 
-    if /^#[[:space:]]*[~]+[[:space:]]+#/ =~ columns.column(column).to_a.join
-      columns.column(column).add_water
+  def add_water_to_column_and_row(column, row)
 
-    elsif columns[column + 1, row] == ' '
-      columns[column + 1, row] = '~'
+    if flowing?(column)
+      add_water_to_column(column)
 
-    elsif columns[column + 1, row] == '#'
-      last_element_column =  (0..column).select { |i| columns[i].value[row - 1] == '~' }.last
-      columns[last_element_column + 1].add_water
+    elsif columns[row, column + 1] == ' '
+      columns[row, column + 1] = '~'
+
+    elsif columns[row, column + 1] == '#'
+      last_element_column = columns.row(row - 1).to_a.join.rindex('~')
+      add_water_to_column_and_row(last_element_column, row - 1)
     end
+  end
+
+  def add_water_to_column(column)
+    if flowing?(column)
+      row = columns.column(column).to_a.rindex('~')
+      columns[row + 1, column] = '~'
+    else
+      row = columns.column(column).to_a.index('~') || columns.column(column).to_a.index('#') - 1
+      columns[row - 1, column] = '~' unless row - 1 == 0
+    end
+  end
+
+  def flowing?(column)
+    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ columns.column(column).to_a.join
   end
 
   def last_water_element
@@ -36,19 +56,6 @@ class Cave
       end
     end
     elements.last
-
-    # columns.column_vectors.each do |column|
-    #   column.reverse_each do |element|
-    #     if element == '~'
-    #       if column.flowing? || columns[column_no - 1].value[row] != '~'
-    #       return [column_no, row]
-    #     else
-    #       return [column_no, column.value.index('~')]
-    #     end
-    #   end
-
-    #   column_no -= 1
-    # end
   end
 
   def to_s
@@ -66,55 +73,17 @@ class Cave
       end
     end.join.strip
   end
-
-end
-
-class Column
-
-  attr_accessor :value
-
-  def initialize(value = '')
-    @value = value
-  end
-
-  def depth
-    return '~' if flowing?
-    value.count('~')
-  end
-
-  def flowing?
-    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ value
-  end
-
-  def add_water
-    if flowing?
-      water_position = value.rindex('~')
-      value[water_position + 1] = '~'
-    else
-      water_position = value.index('~') || value.index('#') - 1
-      value[water_position - 1] = '~' unless water_position - 1 == 0
-    end
-  end
-
 end
 
 
-# Testing 1 2 3...
-f = File.new('complex_cave.txt')
+f = File.new('simple_cave.txt')
 lines = f.readlines
 
-    p lines.tap { |lines| lines.collect! { |line| line.strip.split('') }}
-      # m = Matrix.rows([lines[2..lines.size-1]])
-      # puts m.row(0)
 
-# cave = Cave.build(lines[2..lines.size-1])
-#
-# 999.times do
-#   cave.add_water
-#   # puts cave.to_s
-# end
-# puts cave.to_s
-# puts cave.to_depth_string
-# puts '1 2 2 4 4 4 4 6 6 6 1 1 1 1 4 3 3 4 4 4 4 5 5 5 5 5 2 2 1 1 0 0'
-#
-#
+cave = Cave.build(lines[2..lines.size-1])
+
+99.times do
+  cave.add_water
+  # puts cave.to_s
+end
+puts cave.to_s
