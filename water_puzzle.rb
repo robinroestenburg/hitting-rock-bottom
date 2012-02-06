@@ -35,7 +35,7 @@ class Cave
   end
 
   def add_water_to_column(column)
-    if flowing?(column)
+    if flowing?(grid.column(column))
       row = grid.column(column).to_a.rindex('~')
       grid[row + 1, column] = '~'
     else
@@ -45,7 +45,7 @@ class Cave
   end
 
   def flowing?(column)
-    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ grid.column(column).to_a.join
+    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ column.to_a.join
   end
 
   def last_water_element
@@ -67,7 +67,7 @@ class Cave
 
   def to_depth_string
     grid.column_vectors.collect do |column|
-      if /^#[[:space:]]*[~]+[[:space:]]+#/ =~ column.to_a.join
+      if flowing?(column)
         '~ '
       else
         "#{column.count('~')} "

@@ -120,12 +120,12 @@ describe Cave do
   describe '#flowing?(column)' do
     it 'detects a flowing column' do
       subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],[' '],['#']]
-      subject.flowing?(0).should be_true
+      subject.flowing?(subject.grid.column(0)).should be_true
     end
 
     it 'detects a non-flowing column' do
       subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
-      subject.flowing?(0).should be_false
+      subject.flowing?(subject.grid.column(0)).should be_false
     end
   end
 
