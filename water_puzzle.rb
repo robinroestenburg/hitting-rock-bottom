@@ -76,14 +76,3 @@ class Cave
 end
 
 
-f = File.new('simple_cave.txt')
-lines = f.readlines
-
-
-cave = Cave.build(lines[2..lines.size-1])
-
-99.times do
-  cave.add_water
-  # puts cave.to_s
-end
-puts cave.to_s
