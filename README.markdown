@@ -1,7 +1,10 @@
 ## Hitting Rock Bottom
 
 Ruby implementation of the Hitting Rock Bottom puzzle from the PuzzleNode's
-site. I focused on using the Matrix datatype for this one.
+site as part of this weeks Rubies in the Rough assignment.
+
+I also wanted to get a bit more experience in using the Matrix datatype, so
+that's why I modelled the Cave using a Matrix.
 
 ### Usage
 Example usage:
