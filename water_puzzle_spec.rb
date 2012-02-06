@@ -2,11 +2,11 @@ require_relative 'water_puzzle'
 
 describe Cave do
 
-  it 'has columns' do
-    columns = stub
-    subject.columns = columns
+  it 'has grid' do
+    grid = stub
+    subject.grid = grid
 
-    subject.columns.should == columns
+    subject.grid.should == grid
   end
 
   describe '#build' do
@@ -22,12 +22,12 @@ describe Cave do
     subject { Cave.build(cave_input) }
 
     it 'creates a Column for each column' do
-      subject.columns.column_size == 4
+      subject.grid.column_size == 4
     end
 
-    it 'creates columns containing the column of the cave' do
-      subject.columns.column(0).should == Vector['#', '~', '#', '#']
-      subject.columns.column(1).should == Vector['#', '~', '~', '#']
+    it 'creates grid containing the column of the cave' do
+      subject.grid.column(0).should == Vector['#', '~', '#', '#']
+      subject.grid.column(1).should == Vector['#', '~', '~', '#']
     end
   end
 
@@ -68,7 +68,7 @@ describe Cave do
   describe '#add_water_to_column_and_row(column, row)' do
 
     it 'adds one element of water to an empty column' do
-      subject.columns = Matrix[['#', '#'],
+      subject.grid = Matrix[['#', '#'],
                                ['~', ' '],
                                ['#', ' '],
                                ['#', ' '],
@@ -79,7 +79,7 @@ describe Cave do
     end
 
     it 'adds one element of water to an blocked column' do
-      subject.columns = Matrix[['#', '#', '#', '#'],
+      subject.grid = Matrix[['#', '#', '#', '#'],
                                ['~', '~', ' ', ' '],
                                ['#', '~', ' ', ' '],
                                ['#', '~', ' ', ' '],
@@ -93,38 +93,38 @@ describe Cave do
   describe '#add_water_to_column(column)' do
 
     it 'adds one element of water to an empty column' do
-      subject.columns = Matrix[['#'],[' '],[' '],[' '],[' '],[' '],['#']]
+      subject.grid = Matrix[['#'],[' '],[' '],[' '],[' '],[' '],['#']]
       subject.add_water_to_column(0)
-      subject.columns.to_a.join.should == '#    ~#'
+      subject.grid.to_a.join.should == '#    ~#'
     end
 
     it 'adds one element of water to a column' do
-      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
+      subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
       subject.add_water_to_column(0)
-      subject.columns.to_a.join.should == '#  ~~~#'
+      subject.grid.to_a.join.should == '#  ~~~#'
     end
 
     it 'adds one element of water to a flowing column' do
-      subject.columns = Matrix[['#'],[' '],[' '],['~'],[' '],[' '],['#']]
+      subject.grid = Matrix[['#'],[' '],[' '],['~'],[' '],[' '],['#']]
       subject.add_water_to_column(0)
-      subject.columns.to_a.join.should == '#  ~~ #'
+      subject.grid.to_a.join.should == '#  ~~ #'
     end
 
     it 'adds no water to an already full column' do
-      subject.columns = Matrix[['#'],['~'],['~'],['~'],['~'],['~'],['#']]
+      subject.grid = Matrix[['#'],['~'],['~'],['~'],['~'],['~'],['#']]
       subject.add_water_to_column(0)
-      subject.columns.to_a.join.should == '#~~~~~#'
+      subject.grid.to_a.join.should == '#~~~~~#'
     end
   end
 
   describe '#flowing?(column)' do
     it 'detects a flowing column' do
-      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],[' '],['#']]
+      subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],[' '],['#']]
       subject.flowing?(0).should be_true
     end
 
     it 'detects a non-flowing column' do
-      subject.columns = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
+      subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
       subject.flowing?(0).should be_false
     end
   end

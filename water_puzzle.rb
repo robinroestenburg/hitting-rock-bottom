@@ -6,11 +6,11 @@ end
 
 class Cave
 
-  attr_accessor :columns
+  attr_accessor :grid
 
   def self.build(lines)
     cave = Cave.new
-    cave.columns = Matrix.rows(lines.tap { |lines| lines.collect! { |line| line.strip.split('') }})
+    cave.grid = Matrix.rows(lines.tap { |lines| lines.collect! { |line| line.strip.split('') }})
     cave
   end
 
@@ -21,36 +21,37 @@ class Cave
 
   def add_water_to_column_and_row(column, row)
 
-    if flowing?(column)
+    if grid[row + 1, column] == ' '
       add_water_to_column(column)
 
-    elsif columns[row, column + 1] == ' '
-      columns[row, column + 1] = '~'
+    elsif grid[row, column + 1] == ' '
+      grid[row, column + 1] = '~'
 
-    elsif columns[row, column + 1] == '#'
-      last_element_column = columns.row(row - 1).to_a.join.rindex('~')
+    elsif grid[row, column + 1] == '#'
+      last_element_column = grid.row(row - 1).to_a.join.rindex('~')
       add_water_to_column_and_row(last_element_column, row - 1)
     end
+
   end
 
   def add_water_to_column(column)
     if flowing?(column)
-      row = columns.column(column).to_a.rindex('~')
-      columns[row + 1, column] = '~'
+      row = grid.column(column).to_a.rindex('~')
+      grid[row + 1, column] = '~'
     else
-      row = columns.column(column).to_a.index('~') || columns.column(column).to_a.index('#') - 1
-      columns[row - 1, column] = '~' unless row - 1 == 0
+      row = grid.column(column).to_a.index('~') || grid.column(column).to_a.index('#') - 1
+      grid[row - 1, column] = '~' unless row - 1 == 0
     end
   end
 
   def flowing?(column)
-    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ columns.column(column).to_a.join
+    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ grid.column(column).to_a.join
   end
 
   def last_water_element
 
     elements = []
-    columns.each_with_index do |element, row, column|
+    grid.each_with_index do |element, row, column|
       if element == '~'
         elements << [column, row]
       end
@@ -59,13 +60,13 @@ class Cave
   end
 
   def to_s
-    columns.row_vectors.collect do |row|
+    grid.row_vectors.collect do |row|
       row.to_a.join << "\n"
     end.join
   end
 
   def to_depth_string
-    columns.column_vectors.collect do |column|
+    grid.column_vectors.collect do |column|
       if /^#[[:space:]]*[~]+[[:space:]]+#/ =~ column.to_a.join
         '~ '
       else
