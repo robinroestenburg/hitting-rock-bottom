@@ -64,59 +64,6 @@ describe Cave do
     end
   end
 
-
-  describe '#add_water_to_column_and_row(column, row)' do
-
-    it 'adds one element of water to an empty column' do
-      subject.grid = Matrix[['#', '#'],
-                               ['~', ' '],
-                               ['#', ' '],
-                               ['#', ' '],
-                               ['#', ' '],
-                               ['#', '#']]
-      subject.add_water_to_column_and_row(0, 1)
-      subject.to_s.should == "##\n~~\n# \n# \n# \n##\n"
-    end
-
-    it 'adds one element of water to an blocked column' do
-      subject.grid = Matrix[['#', '#', '#', '#'],
-                               ['~', '~', ' ', ' '],
-                               ['#', '~', ' ', ' '],
-                               ['#', '~', ' ', ' '],
-                               ['#', '~', '~', '#'],
-                               ['#', '#', '#', '#']]
-      subject.add_water_to_column_and_row(2, 4)
-      subject.to_s.should == "####\n~~  \n#~  \n#~~ \n#~~#\n####\n"
-    end
-  end
-
-  describe '#add_water_to_column(column)' do
-
-    it 'adds one element of water to an empty column' do
-      subject.grid = Matrix[['#'],[' '],[' '],[' '],[' '],[' '],['#']]
-      subject.add_water_to_column(0)
-      subject.grid.to_a.join.should == '#    ~#'
-    end
-
-    it 'adds one element of water to a column' do
-      subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
-      subject.add_water_to_column(0)
-      subject.grid.to_a.join.should == '#  ~~~#'
-    end
-
-    it 'adds one element of water to a flowing column' do
-      subject.grid = Matrix[['#'],[' '],[' '],['~'],[' '],[' '],['#']]
-      subject.add_water_to_column(0)
-      subject.grid.to_a.join.should == '#  ~~ #'
-    end
-
-    it 'adds no water to an already full column' do
-      subject.grid = Matrix[['#'],['~'],['~'],['~'],['~'],['~'],['#']]
-      subject.add_water_to_column(0)
-      subject.grid.to_a.join.should == '#~~~~~#'
-    end
-  end
-
   describe '#flowing?(column)' do
     it 'detects a flowing column' do
       subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],[' '],['#']]
@@ -126,59 +73,6 @@ describe Cave do
     it 'detects a non-flowing column' do
       subject.grid = Matrix[['#'],[' '],[' '],[' '],['~'],['~'],['#']]
       subject.flowing?(subject.grid.column(0)).should be_false
-    end
-  end
-
-  describe '#last_water_element' do
-
-    it 'detects which column and row holds the last water element' do
-      lines = []
-      lines << "####\n"
-      lines << "~  #\n"
-      lines << "#  #\n"
-      lines << "####\n"
-
-      Cave.build(lines).last_water_element.should == [0, 1]
-    end
-
-    it 'detects which column and row holds the last water element when flowing' do
-      lines = []
-      lines << "####\n"
-      lines << "~~ #\n"
-      lines << "#  #\n"
-      lines << "####\n"
-
-      Cave.build(lines).last_water_element.should == [1, 1]
-    end
-
-    it 'detects which column and row holds the last water element when full column' do
-      lines = []
-      lines << "####\n"
-      lines << "~~ #\n"
-      lines << "#~ #\n"
-      lines << "####\n"
-
-      Cave.build(lines).last_water_element.should == [1, 2]
-    end
-
-    it 'detects which column and row holds the last water element' do
-      lines = []
-      lines << "####\n"
-      lines << "~~ #\n"
-      lines << "#~~#\n"
-      lines << "####\n"
-
-      Cave.build(lines).last_water_element.should == [2, 2]
-    end
-
-    it 'detects which column and row holds the last water element' do
-      lines = []
-      lines << "####\n"
-      lines << "~~~#\n"
-      lines << "#~~#\n"
-      lines << "####\n"
-
-      Cave.build(lines).last_water_element.should == [2, 2]
     end
   end
 
@@ -231,7 +125,7 @@ describe Cave do
     subject { Cave.build(cave_input) }
 
     it 'prints the cave' do
-      subject.to_s.should == "####\n~~ #\n#~~#\n####\n"
+      subject.to_s.should == "####\n~~ #\n#~~#\n####"
     end
 
   end

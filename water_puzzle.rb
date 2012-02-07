@@ -15,65 +15,53 @@ class Cave
   end
 
   def add_water
-    column, row = last_water_element
-    add_water_to_column_and_row(column, row)
-  end
 
-  def add_water_to_column_and_row(column, row)
+    elements = []
+    grid.each_with_index do |element, row, col|
 
-    if grid[row + 1, column] == ' '
-      add_water_to_column(column)
+      if element == '~' && grid[row + 1, col] == ' '
+        grid[row + 1, col] = '~'
+        return
+      end
 
-    elsif grid[row, column + 1] == ' '
-      grid[row, column + 1] = '~'
+      if element == ' ' &&  grid[row, col - 1] == '~'
+        elements << [row, col]
+      end
 
-    elsif grid[row, column + 1] == '#'
-      last_element_column = grid.row(row - 1).to_a.join.rindex('~')
-      add_water_to_column_and_row(last_element_column, row - 1)
     end
 
-  end
-
-  def add_water_to_column(column)
-    if flowing?(grid.column(column))
-      row = grid.column(column).to_a.rindex('~')
-      grid[row + 1, column] = '~'
-    else
-      row = grid.column(column).to_a.index('~') || grid.column(column).to_a.index('#') - 1
-      grid[row - 1, column] = '~' unless row - 1 == 0
-    end
+    row, col = elements.last
+    grid[row, col] = '~'
   end
 
   def flowing?(column)
     /^#[[:space:]]*[~]+[[:space:]]+#/ =~ column.to_a.join
   end
 
-  def last_water_element
-
-    elements = []
-    grid.each_with_index do |element, row, column|
-      if element == '~'
-        elements << [column, row]
-      end
-    end
-    elements.last
-  end
-
   def to_s
     grid.row_vectors.collect do |row|
-      row.to_a.join << "\n"
-    end.join
+      row.to_a.join
+    end.join("\n")
   end
 
   def to_depth_string
     grid.column_vectors.collect do |column|
       if flowing?(column)
-        '~ '
+        '~'
       else
-        "#{column.count('~')} "
+        "#{column.count('~')}"
       end
-    end.join.strip
+    end.join(' ')
   end
 end
 
+f = File.new('complex_cave.txt')
+lines = f.readlines
 
+cave = Cave.build(lines[2..lines.size-1])
+
+1999.times do
+  cave.add_water
+end
+
+puts cave.to_s
