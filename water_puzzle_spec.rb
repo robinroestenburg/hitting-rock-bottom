@@ -21,13 +21,13 @@ describe Cave do
 
     subject { Cave.build(cave_input) }
 
-    it 'creates a Column for each column' do
-      subject.grid.column_size == 4
+    it 'creates a row for each line of input' do
+      subject.grid.size == 4
     end
 
-    it 'creates grid containing the column of the cave' do
-      subject.grid.column(0).should == Vector['#', '~', '#', '#']
-      subject.grid.column(1).should == Vector['#', '~', '~', '#']
+    it 'creates grid containing the rows of the cave' do
+      subject.grid[0].should == ['#', '#', '#', '#']
+      subject.grid[1].should == ['~', '~', ' ', '#']
     end
   end
 

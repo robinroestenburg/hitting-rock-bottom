@@ -1,37 +1,39 @@
-require 'matrix'
-
-class Matrix
-  public :"[]=", :set_element, :set_component
-end
-
 class Cave
 
   attr_accessor :grid
 
   def self.build(lines)
     cave = Cave.new
-    cave.grid = Matrix.rows(lines.tap { |lines| lines.collect! { |line| line.strip.split('') }})
+
+    cave.grid = lines.tap do |lines|
+      lines.collect! { |line| line.strip.split('') }
+    end
+
     cave
   end
 
   def add_water
 
     elements = []
-    grid.each_with_index do |element, row, col|
 
-      if element == '~' && grid[row + 1, col] == ' '
-        grid[row + 1, col] = '~'
+    grid.each_with_index do |row, row_index|
+      row.each_with_index do |element, column_index|
+
+
+      if element == '~' && grid[row_index + 1][column_index] == ' '
+        grid[row_index + 1][column_index] = '~'
         return
       end
 
-      if element == ' ' &&  grid[row, col - 1] == '~'
-        elements << [row, col]
+      if element == ' ' &&  grid[row_index][column_index - 1] == '~'
+        elements << [row_index, column_index]
       end
 
+      end
     end
 
     row, col = elements.last
-    grid[row, col] = '~'
+    grid[row][col] = '~'
   end
 
   def flowing?(column)
@@ -39,13 +41,13 @@ class Cave
   end
 
   def to_s
-    grid.row_vectors.collect do |row|
+    grid.collect do |row|
       row.to_a.join
     end.join("\n")
   end
 
   def to_depth_string
-    grid.column_vectors.collect do |column|
+    grid.transpose.collect do |column|
       if flowing?(column)
         '~'
       else
