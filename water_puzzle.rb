@@ -14,36 +14,36 @@ class Cave
 
   def add_water
 
-    elements = []
+    # Je wilt elementen die eigen position kennen in grid, waar je
+    # - underneath_water
+    # - next_to_water
+    # - has_water?
+    # - fill
+    # aan kan vragen.
 
-    grid.each_with_index do |row, row_index|
-      row.each_with_index do |element, column_index|
+    grid.reverse.each_with_index do |row, row_index|
+      row.reverse.each_with_index do |value, column_index|
 
+        i = (grid.size - 1) - row_index
+        j = (row.size - 1) - column_index
 
-      if element == '~' && grid[row_index + 1][column_index] == ' '
-        grid[row_index + 1][column_index] = '~'
-        return
+        if value == ' '
+          if underneath_water?(i, j) || next_to_water?(i, j)
+            grid[i][j] = '~'
+            return
+          end
+        end
       end
 
-      if element == ' ' &&  grid[row_index][column_index - 1] == '~'
-        elements << [row_index, column_index]
-      end
-
-      end
     end
-
-    row, col = elements.last
-    grid[row][col] = '~'
   end
 
   def flowing?(column)
-    /^#[[:space:]]*[~]+[[:space:]]+#/ =~ column.to_a.join
+    column.to_a.join.index('~ ')
   end
 
   def to_s
-    grid.collect do |row|
-      row.to_a.join
-    end.join("\n")
+    grid.collect { |row| row.to_a.join }.join("\n")
   end
 
   def to_depth_string
@@ -55,15 +55,26 @@ class Cave
       end
     end.join(' ')
   end
+
+  private
+
+  def next_to_water?(i, j)
+    grid[i][j - 1] == '~'
+  end
+
+  def underneath_water?(i, j)
+    grid[i - 1][j] == '~'
+  end
+
 end
 
-f = File.new('complex_cave.txt')
-lines = f.readlines
-
-cave = Cave.build(lines[2..lines.size-1])
-
-1999.times do
-  cave.add_water
-end
-
-puts cave.to_s
+# f = File.new('complex_cave.txt')
+# lines = f.readlines
+#
+# cave = Cave.build(lines[2..lines.size-1])
+#
+# 1999.times do
+#   cave.add_water
+# end
+#
+# puts cave.to_s
